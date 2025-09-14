@@ -18,7 +18,7 @@ export function Providers({ children, value = defaultSystem }: Readonly<Provider
   const [queryClient] = useState(() => new QueryClient());
   const [mounted, setMounted] = useState(false);
 
-  const appInfo = { appName: "Next-Web3-Boilerplate" };
+  const appInfo = { appName: "TornadoOpt" };
 
   useEffect(() => setMounted(true), []);
 

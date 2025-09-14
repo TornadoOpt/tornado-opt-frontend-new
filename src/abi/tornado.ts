@@ -1,0 +1,56 @@
+export const tornadoAbi = [
+  {
+    type: "function",
+    name: "denomination",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "hashChainRoot",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "bytes32" }],
+  },
+  {
+    type: "function",
+    name: "deposit",
+    stateMutability: "payable",
+    inputs: [{ name: "commitment", type: "bytes32" }],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "setCheckpoint",
+    stateMutability: "nonpayable",
+    inputs: [{ type: "bytes" }, { type: "bytes32" }, { type: "bytes32" }],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "withdraw",
+    stateMutability: "nonpayable",
+    inputs: [{ type: "bytes" }, { type: "bytes32" }, { type: "bytes32" }, { type: "address" }],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "ivcVerifier",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "address" }],
+  },
+  {
+    type: "function",
+    name: "withdrawVerifier",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "address" }],
+  },
+  {
+    type: "event",
+    name: "Deposit",
+    inputs: [{ name: "commitment", type: "bytes32", indexed: true }],
+  },
+] as const;

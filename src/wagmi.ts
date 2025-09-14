@@ -11,29 +11,10 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import type { Transport } from "viem";
 import { createConfig, http } from "wagmi";
-import {
-  mainnet,
-  sepolia,
-  polygon,
-  polygonMumbai,
-  avalanche,
-  avalancheFuji,
-  optimism,
-  optimismGoerli,
-  arbitrum,
-  arbitrumGoerli,
-  linea,
-  lineaTestnet,
-  base,
-  baseGoerli,
-  bsc,
-  bscTestnet,
-} from "wagmi/chains";
-
-import linea_logo from "../public/img/linea_logo.png";
-import lineaTesnet_logo from "../public/img/lineaTesnet_logo.png";
+import { sepolia } from "wagmi/chains";
 
 const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL;
 
 if (!walletConnectProjectId) {
   throw new Error(
@@ -57,51 +38,15 @@ const connectors = connectorsForWallets(
       ],
     },
   ],
-  { appName: "Next-Web3-Boilerplate", projectId: walletConnectProjectId },
+  { appName: "TornadoOpt", projectId: walletConnectProjectId },
 );
 
-// Fix missing icons
-const customLinea = { ...linea, iconUrl: linea_logo.src };
-const customLineaTestnet = { ...lineaTestnet, iconUrl: lineaTesnet_logo.src };
-
 const transports: Record<number, Transport> = {
-  [mainnet.id]: http(),
-  [sepolia.id]: http(),
-  [arbitrum.id]: http(),
-  [arbitrumGoerli.id]: http(),
-  [optimism.id]: http(),
-  [optimismGoerli.id]: http(),
-  [base.id]: http(),
-  [baseGoerli.id]: http(),
-  [polygon.id]: http(),
-  [polygonMumbai.id]: http(),
-  [avalanche.id]: http(),
-  [avalancheFuji.id]: http(),
-  [linea.id]: http(),
-  [lineaTestnet.id]: http(),
-  [bsc.id]: http(),
-  [bscTestnet.id]: http(),
+  [sepolia.id]: http(rpcUrl),
 };
 
 export const wagmiConfig = createConfig({
-  chains: [
-    mainnet,
-    sepolia,
-    arbitrum,
-    arbitrumGoerli,
-    optimism,
-    optimismGoerli,
-    base,
-    baseGoerli,
-    polygon,
-    polygonMumbai,
-    avalanche,
-    avalancheFuji,
-    customLinea,
-    customLineaTestnet,
-    bsc,
-    bscTestnet,
-  ],
+  chains: [sepolia],
   connectors,
   transports,
   ssr: true,
