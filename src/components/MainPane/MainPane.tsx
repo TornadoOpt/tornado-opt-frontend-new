@@ -56,6 +56,7 @@ const WithdrawIcon = () => (
 );
 
 const isHex32 = (v: string) => /^0x[0-9a-fA-F]{64}$/.test(v);
+const isHex = (v: string) => /^0x[0-9a-fA-F]*$/.test(v) && v.length % 2 === 0;
 const randomHex32 = () =>
   `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
     .map((b) => b.toString(16).padStart(2, "0"))
@@ -131,10 +132,14 @@ const MainPane: FC = () => {
   );
   const [statusWdr, setStatusWdr] = useState("");
   const [, setIsWithdrawLoading] = useState(false);
+  // proofs
+  const [proofIVC, setProofIVC] = useState<`0x${string}`>("0x");
+  const [proofW, setProofW] = useState<`0x${string}`>("0x");
 
   const onCheckpoint = async () => {
     if (!hashRoot) return setStatusWdr("hashChainRoot() not loaded yet");
     if (!isHex32(vmr)) return setStatusWdr("Invalid virtualMerkleRoot (bytes32 required)");
+    if (!isHex(proofIVC)) return setStatusWdr("Invalid IVC proof (hex string required)");
     setIsWithdrawLoading(true);
     setStatusWdr("Sending setCheckpoint...");
     try {
@@ -143,7 +148,8 @@ const MainPane: FC = () => {
         address: TORNADO_ADDRESS,
         abi: tornadoAbi,
         functionName: "setCheckpoint",
-        args: ["0x", hashRoot as `0x${string}`, vmr],
+        // setCheckpoint(bytes proofIVC, bytes32 hashChainRoot_, bytes32 virtualMerkleRoot)
+        args: [proofIVC, hashRoot as `0x${string}`, vmr],
       });
       await waitForTransactionReceipt(wagmiConfig, { hash });
       setStatusWdr("✅ setCheckpoint confirmed");
@@ -156,6 +162,7 @@ const MainPane: FC = () => {
 
   const onWithdraw = async () => {
     if (!isHex32(vmr) || !isHex32(nullifier)) return setStatusWdr("Invalid bytes32 input(s)");
+    if (!isHex(proofW)) return setStatusWdr("Invalid withdraw proof (hex string required)");
     setIsWithdrawLoading(true);
     setStatusWdr("Sending withdraw...");
     try {
@@ -164,7 +171,8 @@ const MainPane: FC = () => {
         address: TORNADO_ADDRESS,
         abi: tornadoAbi,
         functionName: "withdraw",
-        args: ["0x", nullifier, vmr, recipient],
+        // withdraw(bytes proof_W, bytes32 nullifierHash, bytes32 virtualMerkleRoot, address recipient)
+        args: [proofW, nullifier, vmr, recipient],
       });
       await waitForTransactionReceipt(wagmiConfig, { hash });
       setStatusWdr("✅ withdraw confirmed");
@@ -446,7 +454,7 @@ const MainPane: FC = () => {
 
                   <Box>
                     <Text fontSize="sm" fontWeight="semibold" mb={2}>
-                      Nullifier
+                      Nullifier Hash
                     </Text>
                     <Input
                       value={nullifier}
@@ -472,6 +480,38 @@ const MainPane: FC = () => {
                       fontFamily="mono"
                       fontSize="sm"
                       placeholder="0x..."
+                      bg={isDarkMode ? "gray.900/50" : "white"}
+                      _focus={{ borderColor: "pink.400", bg: isDarkMode ? "gray.900" : "white" }}
+                    />
+                  </Box>
+
+                  <Box>
+                    <Text fontSize="sm" fontWeight="semibold" mb={2}>
+                      IVC Proof (setCheckpoint)
+                    </Text>
+                    <Input
+                      value={proofIVC}
+                      onChange={(e) => setProofIVC(e.target.value as `0x${string}`)}
+                      fontFamily="mono"
+                      fontSize="sm"
+                      placeholder="0x... hex-encoded proof bytes"
+                      borderColor={proofIVC.length > 0 && !isHex(proofIVC) ? "red.400" : borderCol}
+                      bg={isDarkMode ? "gray.900/50" : "white"}
+                      _focus={{ borderColor: "purple.400", bg: isDarkMode ? "gray.900" : "white" }}
+                    />
+                  </Box>
+
+                  <Box>
+                    <Text fontSize="sm" fontWeight="semibold" mb={2}>
+                      Withdraw Proof
+                    </Text>
+                    <Input
+                      value={proofW}
+                      onChange={(e) => setProofW(e.target.value as `0x${string}`)}
+                      fontFamily="mono"
+                      fontSize="sm"
+                      placeholder="0x... hex-encoded proof bytes"
+                      borderColor={proofW.length > 0 && !isHex(proofW) ? "red.400" : borderCol}
                       bg={isDarkMode ? "gray.900/50" : "white"}
                       _focus={{ borderColor: "pink.400", bg: isDarkMode ? "gray.900" : "white" }}
                     />
