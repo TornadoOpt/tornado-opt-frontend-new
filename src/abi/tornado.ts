@@ -31,7 +31,7 @@ export const tornadoAbi = [
     type: "function",
     name: "withdraw",
     stateMutability: "nonpayable",
-    inputs: [{ type: "bytes" }, { type: "bytes32" }, { type: "bytes32" }, { type: "address" }],
+    inputs: [{ type: "bytes" }, { type: "bytes32" }, { type: "bytes32" }, { type: "bytes32" }],
     outputs: [],
   },
   {
